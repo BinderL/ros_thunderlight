@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+  <group ns="Controller">
+<!-- launch talker.cpp from thunderLight_Controller -->
+    <node name="talker" pkg="thunderlight_controller" type="talker"/>
+  </group>
+
+<!-- launch listener.py from thunderLight_Simulation -->
+<!--  <group ns="Simulation">
+    <node name="listener" pkg="rospy_tutorials" type="listener.py" />
+  </group> -->
+</launch>

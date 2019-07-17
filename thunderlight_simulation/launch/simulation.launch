@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Launch Controller On simulation  -->
+  <include file="$(find thunderlight_controller)/launch/controller.launch" />   
+
+<!-- launch listener.py from thunderLight_Simulation -->
+  <group ns="Simulation">
+    <node name="listener" pkg="rospy_tutorials" type="listener.py" />
+  </group> 
+</launch>

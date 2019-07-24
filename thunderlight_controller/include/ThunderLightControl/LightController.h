@@ -7,25 +7,27 @@
 #ifndef LightController_h
 #define LightController_h
 
-#include "Com.h"
-#include "Strip.h"
+#include "Topos.h"
 
 class LightController
 {
 public:
   int MIN_PWM_TO_SPIN_MOTOR = 70;
-  int _strip_size = 1; //improve : allocation dynamique
 
-  LightController(int argc, char **argv);
+
+  LightController(ros::NodeHandle* n);
   ~LightController();
+  void buildingTopology(void);
   void sendDMXTrame(int _tab[], int size_tab);
   void startController(void);
+  void initGuiParameters(void);
   void Setup(void);
 
 
 public:
-  Com _Com;
-  Strip strip_tab[1];
+
+  ros::NodeHandle* _n = nullptr;
+  Topos _Topos;
 };
 
 #endif

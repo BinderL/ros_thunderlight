@@ -7,34 +7,60 @@
 #include <ThunderLightControl/LightController.h>
 
 
-LightController::LightController(int argc, char **argv)
+LightController::LightController(ros::NodeHandle* n)
 {
-  //_Com.setArg(argc, argv);
+  _Topos.SetServerParam(n);
+  buildingTopology();
 }
 
 LightController::~LightController()
 {
-
-}
-
-void LightController::Setup(void)
-{
   
 }
 
-void LightController::startController(void)
+void LightController::buildingTopology(void)
 {
-  for(int i=0; i<_strip_size; i++)
-  {
-    strip_tab[i].ComputeDMXorder();
-    sendDMXTrame(strip_tab[i].DMXorder_tab, int(strip_tab[i].CANAL));
-  }
+  int ID_tab[3] = {0,1,2} ;
+  bool link_tab[3] = {false, true, true};
+  int howManyElement_tab[3] = {1,3,4};
+  _Topos.buildingNode(ID_tab, link_tab, howManyElement_tab);
 }
 
-void LightController::sendDMXTrame(int _tab[], int size_tab)
+void LightController::initGuiParameters(void)
 {
-  _Com.sendDMXOrderToSim(_tab, size_tab);
+//  ros::ServiceServer service = n->advertiseService("add_two_ints", add);
+//  ROS_INFO("Ready to add two ints.");
 }
+
+
+
+//bool add(beginner_tutorials::AddTwoInts::Request  &req,
+//         beginner_tutorials::AddTwoInts::Response &res)
+//{
+//  res.sum = req.a + req.b;
+//  ROS_INFO("request: x=%ld, y=%ld", (long int)req.a, (long int)req.b);
+//  ROS_INFO("sending back response: [%ld]", (long int)res.sum);
+//  return true;
+//}
+
+//int main(int argc, char **argv)
+//{
+//  ros::init(argc, argv, "add_two_ints_server");
+//  ros::NodeHandle n;
+
+//  ros::ServiceServer service = n.advertiseService("add_two_ints", add);
+//  ROS_INFO("Ready to add two ints.");
+//  ros::spin();
+
+//  return 0;
+//}
+
+void LightController::startController(void)
+{
+  _Topos.startComputing();
+}
+
+
 
 
 

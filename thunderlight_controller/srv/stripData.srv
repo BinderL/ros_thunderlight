@@ -1,0 +1,4 @@
+bool ask
+---
+int32 lenght
+int32 angle

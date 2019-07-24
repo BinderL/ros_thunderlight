@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>thunderlight_simulation</name>
+  <name>thunderlight_ihm</name>
   <version>0.0.0</version>
   <description>The thunderlight_simulation package</description>
 

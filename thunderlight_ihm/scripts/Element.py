@@ -17,11 +17,13 @@ import time;
 
 class Element(Frame):
 
-  def __init__(self, master=None, angle = 0, x_antecedent = 0, y_antecedent = 0):
+  def __init__(self, master=None, canvas = None, angle = 0, x_antecedent = 0, y_antecedent = 0):
     Frame.__init__(self, master)
+    self._canvas = canvas
     self._Led = 32
-    self._lengthLED = 3 # distance between leds
+    self._lengthLED = 4 # distance between leds
     self._largeur = 15
+    self._Cypher = 0.2 #coeff for design part between elements
     self._lengthE = self._Led * self._lengthLED + 2 * self._largeur # 10 mm between leds and 5mm at the begin and the end of the board.
     self._e = 2
     self._angle = angle
@@ -50,8 +52,8 @@ class Element(Frame):
   def initUI(self):
 
     self.pack(fill=BOTH)
-    self.canvas = Canvas(self)
-    self.canvas.pack(fill=BOTH)
+#    self.canvas = Canvas(self)
+    self._canvas.pack(fill=BOTH)
 
 #origine and end element 
     self.setNodeElement()
@@ -60,38 +62,34 @@ class Element(Frame):
     self.setCore_element()
 
   def _create_circle(self, x, y, r, **kwargs):
-    self.canvas.create_oval(x-r, y-r, x+r, y+r, **kwargs)
+    self._canvas.create_oval(x-r, y-r, x+r, y+r, **kwargs)
 
   def setCore_element(self,_stringHEX = "#fb0" ):
-    xy = [(self.xy_origin[0] + self._largeur, self.xy_origin[1] - self._largeur),
-          (self.xy_origin[0] + self._largeur, self.xy_origin[1] + self._largeur), 
-          (self.xy_origin[0] + self._e + self._largeur, self.xy_origin[1] + self._largeur), 
-          (self.xy_origin[0] + self._e + self._largeur, self.xy_origin[1] - self._largeur)
+    xy = [(self.xy_origin[0] + self._Cypher * self._largeur, self.xy_origin[1] - self._largeur),
+          (self.xy_origin[0] + self._Cypher * self._largeur, self.xy_origin[1] + self._largeur), 
+          (self.xy_origin[0] + self._Cypher * self._largeur + self._lengthLED, self.xy_origin[1] + self._largeur), 
+          (self.xy_origin[0] + self._Cypher * self._largeur + self._lengthLED, self.xy_origin[1] - self._largeur)
     ]
     newxy = []
     for i in range(0, self._Led ) :
       for x, y in xy: 
         newxy.append(x + self._lengthLED * i + i * self._e)
         newxy.append(y)
-      self.canvas.create_polygon(newxy,
+      self._canvas.create_polygon(newxy,
             outline= _stringHEX, fill= _stringHEX)
-      self.canvas.pack(fill=BOTH)
+      #self.canvas.pack(fill=BOTH)
 
   def setNodeElement(self) :
 #ORIGINE
     if self.x_antecedent == 0 & self.y_antecedent == 0 :
-      self.xy_origin = (0,200)
+      self.xy_origin = (self.x_antecedent,self.y_antecedent)
     else :
-      self.xy_origin= (x_antecedent,y_antecedent)
-    self._create_circle(self.xy_origin[0], self.xy_origin[1], self._largeur, outline="#ff0", fill="#ff0")
-
-    
-
-
+      self.xy_origin= (self.x_antecedent,self.y_antecedent)
+    self._create_circle(self.xy_origin[0], self.xy_origin[1], self._Cypher * self._largeur, outline="#ff0", fill="#ff0")
 #END
-    xy_end = [self.xy_origin[0] + self._Led * self._lengthLED + self._Led * self._e + 2 * self._largeur, self.xy_origin[1]]   
-    self._create_circle(xy_end[0], xy_end[1], self._largeur, outline="#ff0", fill="#ff0")
-    self.canvas.pack(fill=BOTH)
+    self.xy_end = [self.xy_origin[0] + self._Led * self._lengthLED + (self._Led - 1) * self._e + 2 * self._Cypher * self._largeur, self.xy_origin[1]]   
+    self._create_circle(self.xy_end[0], self.xy_end[1], self._Cypher * self._largeur, outline="#ff0", fill="#ff0")
+    self._canvas.pack(fill=BOTH)
 
 
   def dmx_update(self, data):
@@ -108,7 +106,7 @@ class Element(Frame):
   def updateElement(self, _stringHEX) :
     for i in range (31, 31 + 32) :
 #      print i
-      self.canvas.itemconfig(i, outline= _stringHEX, fill= _stringHEX)
+      self._canvas.itemconfig(i, outline= _stringHEX, fill= _stringHEX)
 
 
 

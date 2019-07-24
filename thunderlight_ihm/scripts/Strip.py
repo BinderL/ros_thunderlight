@@ -19,12 +19,14 @@ from std_msgs.msg import Int32
 
 class Strip(Frame):
 
-  def __init__(self, master=None, Id = 0 ,angle = 0, antecedent = 0, size_barette = 1):
+  def __init__(self, master=None, canvas = None, Id = 0 ,angle = 0, antecedent_x = 0, antecedent_y = 0, size_barette = 1):
+    self._canvas = canvas
     self.isStripInit = False
     Frame.__init__(self, master)
     self._angle = angle
     self._id = Id
-    self._antecedent = antecedent
+    self.antecedent_x = antecedent_x
+    self.antecedent_y = antecedent_y
     self._size_barette = size_barette
     self.element_tab = []
     self.initUI()
@@ -34,10 +36,7 @@ class Strip(Frame):
   def initUI(self):
 
     for i in range(0, self._size_barette):
-       self.element_tab.append(Element.Element(master = self.master))
-#    self.element_tab.append(Element.Element(master = self.master))
-#    self.element_tab.append(Element.Element(master = self.master))
-    print("geometrie initialized")
+       self.element_tab.append(Element.Element(master = self.master, canvas = self._canvas, angle = self._angle, x_antecedent = self.antecedent_x, y_antecedent = self.antecedent_y))
     self.isStripInit = True
 
 
@@ -50,6 +49,12 @@ class Strip(Frame):
 
   def shutdown(self) :
     self.listen.unregister()
+
+  def getEndStrip(self) :
+    return self.element_tab[self._size_barette - 1].xy_end
+
+  def getCanvasFrame(self) :
+    return self.element_tab[self._size_barette - 1].self.canvas
 
 
 

@@ -30,6 +30,7 @@ class Application(Frame):
     self.centerWindow()
     self.setMainButton()
     self._strips = []
+    self.initCanvas()
 
   def centerWindow(self):
 
@@ -54,14 +55,33 @@ class Application(Frame):
     quitButton.pack(side=RIGHT, padx=5, pady=20)
 #    quitButton.place(x= self.w - 80, y= self.h - 40)
 
-    add_strips = Button(self.frame, text="Add Strip", command=self.addStrip, width= 20)
+    add_strips = Button(self.frame, text="Add Strips", command=self.addStrips, width= 20)
 #    add_strips.place(x= self.w - 80, y= self.h - 40)
     add_strips.pack(side=LEFT, padx=5, pady=20)
 
+  def initCanvas(self) :
+    self.pack(fill=BOTH)
+    self.canvas = Canvas(self)
+    self.canvas.pack(fill=BOTH)
 
-  def addStrip(self):
-    _strip = Strip.Strip(master = self.master, Id =  len(self._strips), angle = 0, antecedent = 0, size_barette = 1) 
-    self._strips.append(_strip)
+
+  def addStrips(self):
+    _antecedent = [(0,0),(1,0)]
+    angle = [0, 30]
+    for element in _antecedent :
+      if element[0] == 0 :                        #origine depend de la taille de la fenetre
+        _antecedent = [0,200] 
+      else :
+        _antecedent = self._strips[element[1]].getEndStrip()
+      _strip = Strip.Strip(master = self.master, 
+                           canvas = self.canvas,
+                           Id =  element[0], 
+                           angle = angle[element[0]], 
+                           antecedent_x = _antecedent[0], 
+                           antecedent_y = _antecedent[1], 
+                           size_barette = 1) 
+      self._strips.append(_strip)
+    print("geometrie initialized")
 
   def exit(self):
     #self.destroy

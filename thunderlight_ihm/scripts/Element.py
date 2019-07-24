@@ -37,22 +37,20 @@ class Element(Frame):
     self._angle = self._angle * math.pi / 180
 
   def computeCAngleFromAngle(self):
-    cangle = cmath.exp(angle*1j) # angle in radians
+    self.cangle = cmath.exp(self._angle*1j) # angle in radians
 
-  def computeCangleFromdxdy(self):
-    cangle = complex(dx, dy) #
-    cangle = cangle / abs(cangle)
+  def computeCenterOfRotation(self):
+    self.center_rot = complex(self.x_antecedent, self.y_antecedent)
 
-  def computeXY(self):
-    x = 0   #modify self._length
-    y = 0
-    center_rot = complex(self.x_antecedent, self.y_antecedent)
-   
-    for x, y in coordinates:
-      v = cangle * (complex(x, y) - center_rot) + center_rot
+  def computeRotation(self, x, y):
+    v = self.cangle * (complex(x, y) - self.center_rot) + self.center_rot
+    return v
+    
 
   def initUI(self):
-
+    self.fromDegtoRad()
+    self.computeCAngleFromAngle()
+    self.computeCenterOfRotation()
 #origine and end element 
     self.setNodeElement()
 
@@ -63,6 +61,7 @@ class Element(Frame):
     self._canvas.create_oval(x-r, y-r, x+r, y+r, **kwargs)
 
   def setCore_element(self,_stringHEX = "#fb0" ):
+
     xy = [(self.xy_origin[0] + self._Cypher * self._largeur, self.xy_origin[1] - self._largeur),
           (self.xy_origin[0] + self._Cypher * self._largeur, self.xy_origin[1] + self._largeur), 
           (self.xy_origin[0] + self._Cypher * self._largeur + self._lengthLED, self.xy_origin[1] + self._largeur), 
@@ -70,9 +69,10 @@ class Element(Frame):
     ]
     newxy = []
     for i in range(0, self._Led ) :
-      for x, y in xy: 
-        newxy.append(x + self._lengthLED * i + i * self._e)
-        newxy.append(y)
+      for x, y in xy:
+        v = self.computeRotation(x + self._lengthLED * i + i * self._e, y) # for rotation
+        newxy.append(v.real) 
+        newxy.append(v.imag)
       self.led_tab.append(self._canvas.create_polygon(newxy,
             outline= _stringHEX, fill= _stringHEX))
 
@@ -84,8 +84,10 @@ class Element(Frame):
       self.xy_origin= (self.x_antecedent,self.y_antecedent)
     self._create_circle(self.xy_origin[0], self.xy_origin[1], self._Cypher * self._largeur, outline="#ff0", fill="#ff0")
 #END
+    
     self.xy_end = [self.xy_origin[0] + self._Led * self._lengthLED + (self._Led - 1) * self._e + 2 * self._Cypher * self._largeur, self.xy_origin[1]]   
-    self._create_circle(self.xy_end[0], self.xy_end[1], self._Cypher * self._largeur, outline="#ff0", fill="#ff0")
+    v = self.computeRotation(self.xy_end[0],self.xy_end[1])
+    self._create_circle(v.real, v.imag, self._Cypher * self._largeur, outline="#ff0", fill="#ff0")
 
 
   def dmx_update(self, data):
@@ -99,7 +101,7 @@ class Element(Frame):
     ticks = ticks - time.time()
     print ticks
 
-  def setColor(self, _stringHEX) : #  self._id
+  def setColor(self, _stringHEX) :
     for _id in self.led_tab : 
       self._canvas.itemconfig(_id, outline= _stringHEX, fill= _stringHEX)
 

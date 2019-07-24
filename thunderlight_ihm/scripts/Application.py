@@ -65,8 +65,8 @@ class Application(Frame):
 
 
   def addStrips(self):
-    _antecedent = [(0,0),(1,0),(2,1)]
-    angle = [0, 0, 30]
+    _antecedent = [(0,0),(1,0),(2,0)]
+    angle = [0, -15, 15]
     elem = [1, 1, 1]
     for i in range(0,3) : #_antecedent
       print(i)

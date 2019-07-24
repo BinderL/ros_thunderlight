@@ -17,19 +17,21 @@ import time;
 
 class Element(Frame):
 
-  def __init__(self, master=None, canvas = None, angle = 0, x_antecedent = 0, y_antecedent = 0):
+  def __init__(self, master=None, canvas = None, angle = 0, x_antecedent = 0, y_antecedent = 0, elem = 1):
     Frame.__init__(self, master)
     self._canvas = canvas
     self._Led = 32
-    self._lengthLED = 4 # distance between leds
+    self._lengthLED = 4                  # distance between leds
     self._largeur = 15
     self._Cypher = 0.2 #coeff for design part between elements
     self._lengthE = self._Led * self._lengthLED + 2 * self._largeur # 10 mm between leds and 5mm at the begin and the end of the board.
     self._e = 2
     self._angle = angle
+    self.led_tab = []
     self.x_antecedent = x_antecedent
     self.y_antecedent = y_antecedent
-    self.initUI()  
+    self.initUI() 
+     
 
   def fromDegtoRad(self):
     self._angle = self._angle * math.pi / 180
@@ -51,10 +53,6 @@ class Element(Frame):
 
   def initUI(self):
 
-    self.pack(fill=BOTH)
-#    self.canvas = Canvas(self)
-    self._canvas.pack(fill=BOTH)
-
 #origine and end element 
     self.setNodeElement()
 
@@ -75,9 +73,8 @@ class Element(Frame):
       for x, y in xy: 
         newxy.append(x + self._lengthLED * i + i * self._e)
         newxy.append(y)
-      self._canvas.create_polygon(newxy,
-            outline= _stringHEX, fill= _stringHEX)
-      #self.canvas.pack(fill=BOTH)
+      self.led_tab.append(self._canvas.create_polygon(newxy,
+            outline= _stringHEX, fill= _stringHEX))
 
   def setNodeElement(self) :
 #ORIGINE
@@ -89,7 +86,6 @@ class Element(Frame):
 #END
     self.xy_end = [self.xy_origin[0] + self._Led * self._lengthLED + (self._Led - 1) * self._e + 2 * self._Cypher * self._largeur, self.xy_origin[1]]   
     self._create_circle(self.xy_end[0], self.xy_end[1], self._Cypher * self._largeur, outline="#ff0", fill="#ff0")
-    self._canvas.pack(fill=BOTH)
 
 
   def dmx_update(self, data):
@@ -99,14 +95,13 @@ class Element(Frame):
     _hex = _hex.replace("x", "#")
     _stringHEX = _hex +'0000'
     ticks = time.time()
-    self.updateElement(_stringHEX)
+    self.setColor(_stringHEX)
     ticks = ticks - time.time()
     print ticks
 
-  def updateElement(self, _stringHEX) :
-    for i in range (31, 31 + 32) :
-#      print i
-      self._canvas.itemconfig(i, outline= _stringHEX, fill= _stringHEX)
+  def setColor(self, _stringHEX) : #  self._id
+    for _id in self.led_tab : 
+      self._canvas.itemconfig(_id, outline= _stringHEX, fill= _stringHEX)
 
 
 

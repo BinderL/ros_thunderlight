@@ -60,28 +60,29 @@ class Application(Frame):
     add_strips.pack(side=LEFT, padx=5, pady=20)
 
   def initCanvas(self) :
-    self.pack(fill=BOTH)
     self.canvas = Canvas(self)
     self.canvas.pack(fill=BOTH)
 
 
   def addStrips(self):
-    _antecedent = [(0,0),(1,0)]
-    angle = [0, 30]
-    for element in _antecedent :
-      if element[0] == 0 :                        #origine depend de la taille de la fenetre
-        _antecedent = [0,200] 
+    _antecedent = [(0,0),(1,0),(2,1)]
+    angle = [0, 0, 30]
+    elem = [1, 1, 1]
+    for i in range(0,3) : #_antecedent
+      print(i)
+      if _antecedent[i][0] == 0 :                        #origine depend de la taille de la fenetre
+        antecedent = [0,200] 
       else :
-        _antecedent = self._strips[element[1]].getEndStrip()
+        antecedent = self._strips[_antecedent[i][1]].getEndStrip()
       _strip = Strip.Strip(master = self.master, 
                            canvas = self.canvas,
-                           Id =  element[0], 
-                           angle = angle[element[0]], 
-                           antecedent_x = _antecedent[0], 
-                           antecedent_y = _antecedent[1], 
-                           size_barette = 1) 
+                           Id =  _antecedent[i][0], 
+                           angle = angle[_antecedent[i][0]], 
+                           antecedent_x = antecedent[0], 
+                           antecedent_y = antecedent[1], 
+                           size_barette = elem[i]) 
       self._strips.append(_strip)
-    print("geometrie initialized")
+    print("geometrie initialized with " + str(len(self._strips)) + " independent Strips" )
 
   def exit(self):
     #self.destroy

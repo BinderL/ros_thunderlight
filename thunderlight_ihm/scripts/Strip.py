@@ -24,7 +24,7 @@ class Strip(Frame):
     self.isStripInit = False
     Frame.__init__(self, master)
     self._angle = angle
-    self._id = Id
+    self._id = Id # begin 0
     self.antecedent_x = antecedent_x
     self.antecedent_y = antecedent_y
     self._size_barette = size_barette
@@ -36,16 +36,16 @@ class Strip(Frame):
   def initUI(self):
 
     for i in range(0, self._size_barette):
-       self.element_tab.append(Element.Element(master = self.master, canvas = self._canvas, angle = self._angle, x_antecedent = self.antecedent_x, y_antecedent = self.antecedent_y))
+       self.element_tab.append(Element.Element(master = self.master, canvas = self._canvas, angle = self._angle, x_antecedent = self.antecedent_x, y_antecedent = self.antecedent_y, elem = self._size_barette))
     self.isStripInit = True
-
-
 
   def update(self, data):
     if self.isStripInit == True :
       print("callback fct for strips number = " + str(self._id), data)
       for i in range(0, self._size_barette):
         self.element_tab[i].dmx_update(data.data)
+
+
 
   def shutdown(self) :
     self.listen.unregister()

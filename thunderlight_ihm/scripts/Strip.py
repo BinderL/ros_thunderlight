@@ -5,10 +5,10 @@ ThunderLight Project : graphical Gui for thunderLight simulation
 
 this class aims at providing a sustainable way to represent independent part of the light called strips
 basically a Strip is a rectangle filled with several rectangles with colours depends on intensity and Led colours.
-There is (30 * n_element) rectangles on one strips. (n_element is an integer from 1 to 8).  
+There is (30 * n_element) rectangles on one strips. (n_element is an integer from 1 to 8).
 
 Author: Quentin Marmouget
-Last modified:  
+Last modified:
 
 """
 
@@ -31,12 +31,15 @@ class Strip(Frame):
     self.element_tab = []
     self.initUI()
     self.listen = rospy.Subscriber("DMX_Canal" + str(self._id), Int32, self.update)
-    
+
 
   def initUI(self):
 
     for i in range(0, self._size_barette):
-       self.element_tab.append(Element.Element(master = self.master, canvas = self._canvas, angle = self._angle, x_antecedent = self.antecedent_x, y_antecedent = self.antecedent_y, elem = self._size_barette))
+      if i == 0 :
+        self.element_tab.append(Element.Element(master = self.master, canvas = self._canvas, angle = self._angle, x_antecedent = self.antecedent_x, y_antecedent = self.antecedent_y))
+      else :
+        self.element_tab.append(Element.Element(master = self.master, canvas = self._canvas, angle = self._angle, x_antecedent = self.element_tab[i-1].getXYEndincart()[0], y_antecedent = self.element_tab[i-1].getXYEndincart()[1]))
     self.isStripInit = True
 
   def update(self, data):
@@ -44,8 +47,6 @@ class Strip(Frame):
       print("callback fct for strips number = " + str(self._id), data)
       for i in range(0, self._size_barette):
         self.element_tab[i].dmx_update(data.data)
-
-
 
   def shutdown(self) :
     self.listen.unregister()
@@ -55,7 +56,3 @@ class Strip(Frame):
 
   def getCanvasFrame(self) :
     return self.element_tab[self._size_barette - 1].self.canvas
-
-
-
-

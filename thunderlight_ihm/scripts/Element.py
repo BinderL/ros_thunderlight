@@ -5,14 +5,15 @@ ThunderLight Project : graphical Gui for thunderLight simulation
 
 this class aims at providing a sustainable way to represent element from strips
 basically a Strip is a rectangle filled with several element means rectangles with colours depends on intensity and Led colours.
-an element is a geometrical representation 
+an element is a geometrical representation
 Author: Quentin Marmouget
-Last modified:  
+Last modified:
 """
 
 from Tkinter import *
 import cmath, math
-import time;  
+import time;
+import numpy as np
 
 
 class Element(Frame):
@@ -30,8 +31,8 @@ class Element(Frame):
     self.led_tab = []
     self.x_antecedent = x_antecedent
     self.y_antecedent = y_antecedent
-    self.initUI() 
-     
+    self.initUI()
+
 
   def fromDegtoRad(self):
     self._angle = self._angle * math.pi / 180
@@ -45,13 +46,13 @@ class Element(Frame):
   def computeRotation(self, x, y):
     v = self.cangle * (complex(x, y) - self.center_rot) + self.center_rot
     return v
-    
+
 
   def initUI(self):
     self.fromDegtoRad()
     self.computeCAngleFromAngle()
     self.computeCenterOfRotation()
-#origine and end element 
+#origine and end element
     self.setNodeElement()
 
 #Body element
@@ -63,15 +64,15 @@ class Element(Frame):
   def setCore_element(self,_stringHEX = "#fb0" ):
 
     xy = [(self.xy_origin[0] + self._Cypher * self._largeur, self.xy_origin[1] - self._largeur),
-          (self.xy_origin[0] + self._Cypher * self._largeur, self.xy_origin[1] + self._largeur), 
-          (self.xy_origin[0] + self._Cypher * self._largeur + self._lengthLED, self.xy_origin[1] + self._largeur), 
+          (self.xy_origin[0] + self._Cypher * self._largeur, self.xy_origin[1] + self._largeur),
+          (self.xy_origin[0] + self._Cypher * self._largeur + self._lengthLED, self.xy_origin[1] + self._largeur),
           (self.xy_origin[0] + self._Cypher * self._largeur + self._lengthLED, self.xy_origin[1] - self._largeur)
     ]
     newxy = []
     for i in range(0, self._Led ) :
       for x, y in xy:
         v = self.computeRotation(x + self._lengthLED * i + i * self._e, y) # for rotation
-        newxy.append(v.real) 
+        newxy.append(v.real)
         newxy.append(v.imag)
       self.led_tab.append(self._canvas.create_polygon(newxy,
             outline= _stringHEX, fill= _stringHEX))
@@ -81,13 +82,13 @@ class Element(Frame):
     if self.x_antecedent == 0 & self.y_antecedent == 0 :
       self.xy_origin = (self.x_antecedent,self.y_antecedent)
     else :
-      self.xy_origin= (self.x_antecedent,self.y_antecedent)
+      self.xy_origin= (self.x_antecedent ,self.y_antecedent)
     self._create_circle(self.xy_origin[0], self.xy_origin[1], self._Cypher * self._largeur, outline="#ff0", fill="#ff0")
 #END
-    
-    self.xy_end = [self.xy_origin[0] + self._Led * self._lengthLED + (self._Led - 1) * self._e + 2 * self._Cypher * self._largeur, self.xy_origin[1]]   
-    v = self.computeRotation(self.xy_end[0],self.xy_end[1])
-    self._create_circle(v.real, v.imag, self._Cypher * self._largeur, outline="#ff0", fill="#ff0")
+
+    self.xy_end = [self.xy_origin[0] + self._Led * self._lengthLED + (self._Led - 1) * self._e + 2 * self._Cypher * self._largeur, self.xy_origin[1]]
+    self.v = self.computeRotation(self.xy_end[0],self.xy_end[1]) #for rotation
+    self._create_circle(self.v.real, self.v.imag, self._Cypher * self._largeur, outline="#ff0", fill="#ff0")
 
 
   def dmx_update(self, data):
@@ -102,12 +103,16 @@ class Element(Frame):
     print ticks
 
   def setColor(self, _stringHEX) :
-    for _id in self.led_tab : 
+    for _id in self.led_tab :
       self._canvas.itemconfig(_id, outline= _stringHEX, fill= _stringHEX)
 
+  def getXYEndincart(self) :
+    return self.pol2cart(cmath.polar(self.v)[0], cmath.polar(self.v)[1])
 
-
-
+  def pol2cart(self, rho, phi) :
+    x = (int)(rho * np.cos(phi))
+    y = (int)(rho * np.sin(phi))
+    return(x, y)
 #Exemple for allows the user to use the mouse to rotate an item around a given center point
 #def getangle(event):
   #  dx = c.canvasx(event.x) - center[0]
@@ -138,30 +143,3 @@ class Element(Frame):
 #c.bind("<B1-Motion>", motion)
 
 #mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
